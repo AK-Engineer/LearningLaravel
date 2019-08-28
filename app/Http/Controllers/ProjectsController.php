@@ -21,36 +21,52 @@ class ProjectsController extends Controller
 
     public function store()
     {        
-        $project = new Project();
-        $project->title = request('title');
-        $project->description = request('description');
-        $project->save();
+        // $project = new Project();
+        // $project->title = request('title');
+        // $project->description = request('description');
+        // $project->save();
+        // OR
+        // Project::create([
+        //     'title' => request('title'), 
+        //     'description' => request('description')
+        // ]);
+        // OR
+        request()->validate([
+            'title'=>['required','min:3'],
+            'description'=>['required','min:3']
+        ]);
+        Project::create(request(['title','description']));
+
+
 
         return redirect('/projects');
     }
 
-    public function edit($id)
+    public function edit(Project $project)
     {
         # example.com/projects/1/edit
-
-        $project = Project::findOrFail($id);
-
         return view('projects.edit',compact('project'));
     }
 
-    public function update($id)
+    public function update(Project $project)
     {
-        $project = Project::findOrFail($id);
-        $project->title=request('title');
-        $project->description=request('description');
-        $project->save();
+        $project->update(request(['title','description']));
+        // equals
+        // $project->title=request('title');
+        // $project->description=request('description');
+        // $project->save();
 
         return redirect('/projects');
     }
 
-    public function destroy($id)
+    public function destroy(Project $project)
     {
-        Project::findOrFail($id)->delete();
+        $project->delete();
         return redirect('/projects');
+    }
+
+    public function show(Project $project)
+    {
+        return view('projects.show',compact('project'));
     }
 }
